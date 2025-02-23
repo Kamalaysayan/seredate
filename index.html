@@ -6,25 +6,17 @@
     <title>KAMALAYSAYAN</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+        /* ... (Your existing CSS styles) ... */
+        #image-gallery {
+            display: flex; /* Or grid, or whatever layout you want */
+            flex-wrap: wrap; /* Allows images to wrap onto multiple lines */
+            justify-content: center; /* Center the images */
+            gap: 10px; /* Spacing between images */
         }
 
-        .logo-container {
-            margin-bottom: 20px;
-        }
-
-        .title-container {
-            margin-bottom: 30px;
-        }
-
-        .button-container {
-            display: flex;
-            gap: 20px;
+        #image-gallery img {
+            max-width: 200px; /* Adjust as needed */
+            height: auto;
         }
     </style>
 </head>
@@ -37,8 +29,40 @@
             <h1>KAMALAYSAYAN</h1>
         </div>
         <div class="button-container">
-            <button class="button" onclick="navigateToEditor()">Editor</button>  <button class="button" onclick="navigateToCustomer()">Customer</button>  </div>
+            <button class="button" onclick="navigateToEditor()">Editor</button>
+            <button class="button" onclick="navigateToCustomer()">Customer</button>
+        </div>
+
+        <div id="image-gallery">
+            </div>
+
     </div>
-    <script src="scripts.js"></script>
+    <script>
+        function navigateToEditor() {
+            window.location.href = "editor.html"; // Replace with your actual editor page URL
+        }
+
+        function navigateToCustomer() {
+            window.location.href = "customer.html"; // Replace with your actual customer page URL
+        }
+
+        // --- Image Gallery Logic ---
+        const imageGallery = document.getElementById('image-gallery');
+
+        // Placeholder data (replace with actual data from your server later)
+        const images = [
+            "image1.jpg", // Replace with your image filenames
+            "image2.png",
+            "image3.gif"
+        ];
+
+        images.forEach(image => {
+            const imgElement = document.createElement('img');
+            imgElement.src = `images/${image}`;
+            imgElement.alt = image; // Improve alt text later
+            imageGallery.appendChild(imgElement);
+        });
+
+    </script>
 </body>
 </html>
