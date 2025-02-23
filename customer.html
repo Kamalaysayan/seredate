@@ -1,63 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Customer</title>
-  <style>
-    .pink-container {
-      background-color: pink;
-      padding: 10px;
-      margin: 5px;
-      display: inline-block;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer</title>
+    <style>
+        .pink-container {
+            background-color: pink;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Customer</h2>
-    <div id="containers-display"></div>
-  </div>
+    <div class="container">
+        <h2>Customer</h2>
+        <div id="containers-display"></div>
+    </div>
 
-  <script>
-    const containersDisplay = document.getElementById('containers-display');
+    <script>
+        const containersDisplay = document.getElementById('containers-display');
 
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchLinks();
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLinks();
 
-      const broadcast = new BroadcastChannel('newLink');
-      broadcast.onmessage = (event) => {
-        fetchLinks();
-      };
-    });
-
-    function fetchLinks() {
-      fetch('/.netlify/functions/update-links', {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-            displayLinks(data);
+            const broadcast = new BroadcastChannel('newLink');
+            broadcast.onmessage = (event) => {
+                fetchLinks(); // Refresh the list when a new link is added
+            };
         });
-    }
 
-    function displayLinks(links) {
-      containersDisplay.innerHTML = ''; // Clear previous links
-      links.forEach((linkObj, index) => {
-        const container = document.createElement('div');
-        container.className = 'pink-container';
-        container.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link
-        container.onclick = () => { 
-          const password = prompt("Enter password for this link:");
-          if (password === linkObj.password) {
-            window.open(linkObj.link, '_blank');
-          } else {
-            alert("Incorrect password.");
-          }
-        };
-        
-        containersDisplay.appendChild(container);
-      });
-    }
-  </script>
+        function fetchLinks() {
+            fetch('/.netlify/functions/update-links', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => displayLinks(data))
+                .catch(error => console.error("Error fetching links:", error));
+        }
+
+        function displayLinks(links) {
+            containersDisplay.innerHTML = ''; // Clear previous links
+            links.forEach((linkObj, index) => {
+                const container = document.createElement('div');
+                container.className = 'pink-container';
+                container.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link
+                container.onclick = () => { 
+                    const password = prompt("Enter password for this link:");
+                    if (password === linkObj.password) {
+                        window.open(linkObj.link, '_blank');
+                    } else {
+                        alert("Incorrect password.");
+                    }
+                };
+
+                containersDisplay.appendChild(container);
+            });
+        }
+    </script>
 </body>
 </html>

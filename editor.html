@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
     <style>
-        /* Existing styles */
         .pink-container {
             background-color: pink;
             padding: 10px;
@@ -16,7 +17,6 @@
             display: none;
         }
 
-        /* Added styles to ensure elements are visible */
         #link-input {
             display: none;
         }
@@ -47,12 +47,15 @@
 
             fetch('/.netlify/functions/update-links', {
                 method: 'POST',
-                body: JSON.stringify({ link: link })
+                body: JSON.stringify({ link: link }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => response.json())
             .then(newLink => {
                 links.push(newLink);
-                displayLinks();// Update display
+                displayLinks();
                 const broadcast = new BroadcastChannel('newLink');
                 broadcast.postMessage(newLink);
                 linkInput.value = '';

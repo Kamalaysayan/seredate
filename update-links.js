@@ -30,20 +30,20 @@ exports.handler = async (event, context) => {
       };
     }
   } else if (event.httpMethod === 'GET') {
-      try {
-          const dataPath = path.join(__dirname, '../data.json');
-          const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-          return {
-              statusCode: 200,
-              body: JSON.stringify(existingData)
-          };
-      } catch (error) {
-          console.error("Error reading data.json:", error);
-          return {
-              statusCode: 500,
-              body: JSON.stringify({ error: 'Failed to fetch links' })
-          };
-      }
+    try {
+      const dataPath = path.join(__dirname, '../data.json');
+      const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+      return {
+          statusCode: 200,
+          body: JSON.stringify(existingData)
+      };
+    } catch (error) {
+      console.error("Error reading data.json:", error);
+      return {
+          statusCode: 500,
+          body: JSON.stringify({ error: 'Failed to fetch links' })
+      };
+    }
   } else {
     return {
       statusCode: 405,
