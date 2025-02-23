@@ -2,14 +2,20 @@
 <html>
 <head>
   <title>Editor</title>
-  <style> /* ... your styles ... */ </style>
+  <style>
+    /* ... your styles ... */
+    #link-input {
+      display: none; /* Initially hide the input field */
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>Editor</h2>
-    <input type="text" id="link-input" placeholder="Paste Google Drive link" style="display: none;">
-    <button onclick="showInput()">Add Link</button>
+    <input type="text" id="link-input" placeholder="Paste Google Drive link">
+    <button onclick="addLink()">Add Link</button>
     <div id="links-display"></div>
+    <button onclick="showInput()">Add Link</button>
     <button onclick="doneAdding()">Done</button>
   </div>
 
@@ -18,15 +24,13 @@
     const linksDisplay = document.getElementById('links-display');
     let links = [];
 
-    const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/110s2w1CqnpapxSsyjpBP9R17uRiVpqTAWA6l3P1bX2s/edit?usp=sharing'; // Replace with your Google Sheet URL
-
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchLinks(); // Fetch and display links on load
+    // Function to load links from local storage on page load
+    window.addEventListener('DOMContentLoaded', (event) => {
+      fetchLinks();
     });
 
     function fetchLinks() {
-        // Fetch data from the Google Sheet (replace with your actual fetch method)
-        fetch(googleSheetUrl)
+        fetch('/data.json')
             .then(response => response.json())
             .then(data => {
                 links = data;
@@ -50,20 +54,24 @@
 
     function addLink() {
       const link = linkInput.value;
-      // Here you would add the link to the Google Sheet (replace with your actual method)
-      // For this example, we'll just update the local links array
-      const newEntry = {
-        "link": link,
-        "password": String(links.length + 1).padStart(3, '0') // Generate password
-      };
-      links.push(newEntry);
-      displayLinks(); // Update the display
-      linkInput.value = '';
-      linkInput.style.display = 'none';
+
+      fetch('/.netlify/functions/update-links', {
+        method: 'POST',
+        body: JSON.stringify({ link: link })
+      })
+      .then(response => response.json())
+      .then(newLink => {
+        links.push(newLink); // Update the links array with the new link from server
+        displayLinks(); // Update the display
+        linkInput.value = '';
+        linkInput.style.display = 'none';
+      })
+      .catch(error => console.error("Error adding link:", error));
     }
 
     function doneAdding() {
-      window.location.href = "editor.html"; // Or wherever your editor homepage is
+      // Redirect back to the editor's homepage
+      window.location.href = "editor.html"; // Replace with your actual homepage URL
     }
   </script>
 </body>

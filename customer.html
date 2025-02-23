@@ -2,7 +2,9 @@
 <html>
 <head>
   <title>Customer</title>
-  <style> /* ... your styles ... */ </style>
+  <style>
+    /* ... your styles ... */
+  </style>
 </head>
 <body>
   <div class="container">
@@ -14,15 +16,12 @@
     const containersDisplay = document.getElementById('containers-display');
     let links = [];
 
-    const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/110s2w1CqnpapxSsyjpBP9R17uRiVpqTAWA6l3P1bX2s/edit?usp=sharing'; // Replace with your Google Sheet URL
-
     window.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     });
 
     function fetchLinks() {
-        // Fetch data from the Google Sheet (replace with your actual fetch method)
-        fetch(googleSheetUrl)
+        fetch('/data.json')
             .then(response => response.json())
             .then(data => {
                 links = data;
@@ -49,8 +48,6 @@
             containersDisplay.appendChild(container);
         });
     }
-
-    // ... (rest of your JavaScript code)
   </script>
 </body>
 </html>
