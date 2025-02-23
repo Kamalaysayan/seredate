@@ -4,6 +4,13 @@
   <title>Customer</title>
   <style>
     /* ... your styles ... */
+    .pink-container { /* Basic styling for the containers */
+      background-color: pink;
+      padding: 10px;
+      margin: 5px;
+      display: inline-block;
+      cursor: pointer; /* Make them clickable */
+    }
   </style>
 </head>
 <body>
@@ -40,8 +47,7 @@
       links.forEach((linkObj, index) => {
         const container = document.createElement('div');
         container.className = 'pink-container';
-        container.textContent = index + 1;
-
+        container.textContent = linkObj.link || (index + 1); // Display link or number
         container.addEventListener('click', () => {
           const password = prompt("Enter password for this link:");
           if (password === linkObj.password) {

@@ -7,6 +7,13 @@
     #link-input {
       display: none;
     }
+    .pink-container { /* Basic styling for the containers */
+      background-color: pink;
+      padding: 10px;
+      margin: 5px;
+      display: inline-block;
+      cursor: pointer; /* Make them clickable */
+    }
   </style>
 </head>
 <body>
@@ -39,10 +46,10 @@
 
     function displayLinks() {
       linksDisplay.innerHTML = ''; // Clear previous links
-      links.forEach(linkObj => {
+      links.forEach((linkObj, index) => {
         const linkContainer = document.createElement('div');
-        linkContainer.className = 'link-container';
-        linkContainer.textContent = linkObj.link;
+        linkContainer.className = 'pink-container';
+        linkContainer.textContent = linkObj.link || (index + 1); // Display link or number
         linksDisplay.appendChild(linkContainer);
       });
     }
