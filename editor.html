@@ -75,7 +75,7 @@
             .then(response => response.json())
             .then(newLink => {
                 links.push(newLink);
-                displayLinks(); // Update the display immediately
+                displayLinks();// Update display
                 const broadcast = new BroadcastChannel('newLink');
                 broadcast.postMessage(newLink);
                 linkInput.value = '';
@@ -85,7 +85,7 @@
     }
 
     function doneAdding() {
-        fetchLinks(); // Refresh links to update display
+        fetchLinks();// Update display
     }
   </script>
 </body>
