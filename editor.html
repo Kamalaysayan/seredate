@@ -1,33 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editor</title>
+    <style>
+        /* Existing styles */
+        .pink-container {
+            background-color: pink;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        #done-button {
+            display: none;
+        }
+
+        /* Added styles to ensure elements are visible */
+        #link-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Editor Homepage</h2>
+    <div id="links-display"></div>
+    <button onclick="showInput()">Add Link</button>
+    <input type="text" id="link-input" placeholder="Paste Google Drive link">
+    <button id="done-button" onclick="doneAdding()">Done</button>
+</div>
+
 <script>
-    async function uploadImage() {
-        const file = document.getElementById('fileInput').files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('image', file);
+    const linkInput = document.getElementById('link-input');
+    const linksDisplay = document.getElementById('links-display');
+    const doneButton = document.getElementById('done-button');
+    let links = [];
 
-            try {
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+    function showInput() {
+        linkInput.style.display = 'block';
+        doneButton.style.display = 'block';
+    }
 
-                const result = await response.json();
-                if (response.ok) {
-                    document.getElementById('uploadedImage').src = result.filePath;
-                    document.getElementById('uploadedImageContainer').style.display = 'block';
-                } else {
-                    alert('Failed to upload image.');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                alert('An error occurred while uploading the image.');
-            }
+    function doneAdding() {
+        const link = linkInput.value;
+
+        if (link) {
+            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
+            displayLinks();
+            linkInput.value = '';
+            linkInput.style.display = 'none';
+            doneButton.style.display = 'none';
         } else {
-            alert('Please select a file.');
+            alert('Please enter a link.');
         }
     }
 
-    function markAsDone() {
-        window.location.href = 'editor.html';
+    function displayLinks() {
+        linksDisplay.innerHTML = ''; // Clear previous links
+
+        links.forEach((linkObj, index) => {
+            const linkContainer = document.createElement('div');
+            linkContainer.className = 'pink-container';
+            linkContainer.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link with number
+            linksDisplay.appendChild(linkContainer);
+        });
+
+        // Update customer page (broadcast new links)
+        const broadcast = new BroadcastChannel('newLink');
+        broadcast.postMessage(links);
+    }
+
+    // Fetch existing links on load (optional)
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLinks();
+    });
+
+    function fetchLinks() {
+        // You can implement this to fetch existing links from data.json if needed
+        // For now, let's add a dummy link for testing
+        links.push({link: "https://example.com", password: "001"});
+        displayLinks();
     }
 </script>
+</body>
+</html>
