@@ -58,7 +58,6 @@
             })
             .then(response => response.json())
             .then(newLink => {
-                // Update the local links array
                 links.push(newLink);
                 displayLinks();
                 // Broadcast the new link to the customer page
@@ -79,4 +78,28 @@
 
         links.forEach((linkObj, index) => {
             const linkContainer = document.createElement('a'); // Use <a> tag for links
-            linkContainer.href = linkObj.
+            linkContainer.href = linkObj.link; // Set the link
+            linkContainer.target = "_blank"; // Open in new tab
+            linkContainer.className = 'pink-container';
+            linkContainer.textContent = `${index + 1}`; // Display only the number
+            linksDisplay.appendChild(linkContainer);
+        });
+    }
+
+    // Fetch existing links on load
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLinks();
+    });
+
+    function fetchLinks() {
+        fetch('/.netlify/functions/update-links', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                links = data; // Store fetched links in the array
+                displayLinks(); // Display fetched links
+            })
+            .catch(error => console.error("Error fetching links:", error));
+    }
+</script>
+</body>
+</html>
