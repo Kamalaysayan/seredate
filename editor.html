@@ -3,19 +3,9 @@
 <head>
   <title>Editor</title>
   <style>
-    #link-input {
-      display: none;
-    }
-    .pink-container {
-      background-color: pink;
-      padding: 10px;
-      margin: 5px;
-      display: inline-block;
-      cursor: pointer;
-    }
-    #done-button {
-      display: none;
-    }
+    #link-input { display: none; }
+    .pink-container { background-color: pink; padding: 10px; margin: 5px; display: inline-block; cursor: pointer; }
+    #done-button { display: none; }
   </style>
 </head>
 <body>
@@ -33,60 +23,45 @@
     const doneButton = document.getElementById('done-button');
     let links = [];
 
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchLinks();
-    });
+    window.addEventListener('DOMContentLoaded', fetchLinks);
 
     function fetchLinks() {
-        fetch('/data.json')
-            .then(response => response.json())
-            .then(data => {
-                links = data;
-                displayLinks();
-            });
+      fetch('/data.json')
+        .then(res => res.json())
+        .then(data => { links = data; displayLinks(); });
     }
 
     function displayLinks() {
-        linksDisplay.innerHTML = ''; // Clear previous links
-
-        // Iterate through the links and create containers
-        links.forEach((linkObj, index) => {
-            const linkContainer = document.createElement('div');
-            linkContainer.className = 'pink-container';
-            linkContainer.textContent = linkObj.link; // Display the actual link
-            linksDisplay.appendChild(linkContainer);
-        });
-
-        // Show "Done" button only if there are links
-        doneButton.style.display = links.length > 0 ? 'block' : 'none';
+      linksDisplay.innerHTML = '';
+      links.forEach(linkObj => {
+        const linkContainer = document.createElement('div');
+        linkContainer.className = 'pink-container';
+        linkContainer.textContent = linkObj.link;
+        linksDisplay.appendChild(linkContainer);
+      });
+      doneButton.style.display = links.length > 0 ? 'block' : 'none';
     }
 
-    function showInput() {
-        linkInput.style.display = 'block';
-    }
+    function showInput() { linkInput.style.display = 'block'; }
 
     function addLink() {
-        const link = linkInput.value;
-
-        fetch('/.netlify/functions/update-links', {
-            method: 'POST',
-            body: JSON.stringify({ link: link })
+      const link = linkInput.value;
+      fetch('/.netlify/functions/update-links', {
+        method: 'POST',
+        body: JSON.stringify({ link })
+      })
+        .then(res => res.json())
+        .then(newLink => {
+          links.push(newLink);
+          displayLinks();
+          new BroadcastChannel('newLink').postMessage(newLink);
+          linkInput.value = '';
+          linkInput.style.display = 'none';
         })
-            .then(response => response.json())
-            .then(newLink => {
-                links.push(newLink);
-                displayLinks();// Update display
-                const broadcast = new BroadcastChannel('newLink');
-                broadcast.postMessage(newLink);
-                linkInput.value = '';
-                linkInput.style.display = 'none';
-            })
-            .catch(error => console.error("Error adding link:", error));
+        .catch(err => console.error("Add Link Error:", err));
     }
 
-    function doneAdding() {
-        fetchLinks();// Update display
-    }
+    function doneAdding() { fetchLinks(); }
   </script>
 </body>
 </html>

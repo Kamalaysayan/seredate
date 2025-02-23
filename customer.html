@@ -3,13 +3,7 @@
 <head>
   <title>Customer</title>
   <style>
-    .pink-container {
-      background-color: pink;
-      padding: 10px;
-      margin: 5px;
-      display: inline-block;
-      cursor: pointer;
-    }
+    .pink-container { background-color: pink; padding: 10px; margin: 5px; display: inline-block; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -22,31 +16,20 @@
     const containersDisplay = document.getElementById('containers-display');
     let links = [];
 
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchLinks();
-
-      const broadcast = new BroadcastChannel('newLink');
-      broadcast.onmessage = (event) => {
-        links.push(event.data);
-        displayLinks();
-      };
-    });
+    window.addEventListener('DOMContentLoaded', fetchLinks);
 
     function fetchLinks() {
       fetch('/data.json')
-        .then(response => response.json())
-        .then(data => {
-          links = data;
-          displayLinks();
-        });
+        .then(res => res.json())
+        .then(data => { links = data; displayLinks(); });
     }
 
     function displayLinks() {
       containersDisplay.innerHTML = '';
-      links.forEach((linkObj, index) => {
+      links.forEach(linkObj => {
         const container = document.createElement('div');
         container.className = 'pink-container';
-        container.textContent = linkObj.link; // Display the actual link
+        container.textContent = linkObj.link;
         container.addEventListener('click', () => {
           const password = prompt("Enter password for this link:");
           if (password === linkObj.password) {
@@ -55,10 +38,14 @@
             alert("Incorrect password.");
           }
         });
-
         containersDisplay.appendChild(container);
       });
     }
+
+    new BroadcastChannel('newLink').onmessage = event => {
+      links.push(event.data);
+      displayLinks();
+    };
   </script>
 </body>
 </html>
