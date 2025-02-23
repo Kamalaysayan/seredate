@@ -17,36 +17,42 @@
     let links = [];
 
     window.addEventListener('DOMContentLoaded', () => {
-        fetchLinks();
+      fetchLinks();
+
+      const broadcast = new BroadcastChannel('newLink');
+      broadcast.onmessage = (event) => {
+        links.push(event.data);
+        displayLinks(); // Update the display on the customer's page
+      };
     });
 
     function fetchLinks() {
-        fetch('/data.json')
-            .then(response => response.json())
-            .then(data => {
-                links = data;
-                displayLinks();
-            });
+      fetch('/data.json')
+        .then(response => response.json())
+        .then(data => {
+          links = data;
+          displayLinks();
+        });
     }
 
     function displayLinks() {
-        containersDisplay.innerHTML = '';
-        links.forEach((linkObj, index) => {
-            const container = document.createElement('div');
-            container.className = 'pink-container';
-            container.textContent = index + 1; // Display the number
+      containersDisplay.innerHTML = '';
+      links.forEach((linkObj, index) => {
+        const container = document.createElement('div');
+        container.className = 'pink-container';
+        container.textContent = index + 1;
 
-            container.addEventListener('click', () => {
-                const password = prompt("Enter password for this link:");
-                if (password === linkObj.password) {
-                    window.open(linkObj.link, '_blank'); // Open the link in a new tab
-                } else {
-                    alert("Incorrect password.");
-                }
-            });
-
-            containersDisplay.appendChild(container);
+        container.addEventListener('click', () => {
+          const password = prompt("Enter password for this link:");
+          if (password === linkObj.password) {
+            window.open(linkObj.link, '_blank');
+          } else {
+            alert("Incorrect password.");
+          }
         });
+
+        containersDisplay.appendChild(container);
+      });
     }
   </script>
 </body>
