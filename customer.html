@@ -46,7 +46,7 @@
       links.forEach((linkObj, index) => {
         const container = document.createElement('div');
         container.className = 'pink-container';
-        container.textContent = linkObj.link || (index + 1);
+        container.textContent = linkObj.link; // Display the actual link
         container.addEventListener('click', () => {
           const password = prompt("Enter password for this link:");
           if (password === linkObj.password) {
