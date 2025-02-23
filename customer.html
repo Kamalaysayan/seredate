@@ -2,42 +2,55 @@
 <html>
 <head>
   <title>Customer</title>
-  <style>
-    .container {
-      display: flex;
-      flex-direction: column;
-    }
-    .pink-container {
-      background-color: pink;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-  </style>
+  <style> /* ... your styles ... */ </style>
 </head>
 <body>
   <div class="container">
     <h2>Customer</h2>
-    <div id="containers-display">
-    </div>
+    <div id="containers-display"></div>
   </div>
 
   <script>
     const containersDisplay = document.getElementById('containers-display');
+    let links = [];
 
-    // Here you would fetch the links from the database
-    // For this example, we'll use placeholder data
-    const links = [
-      "https://drive.google.com/...",
-      "https://drive.google.com/...",
-      "https://drive.google.com/..."
-    ];
+    const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/110s2w1CqnpapxSsyjpBP9R17uRiVpqTAWA6l3P1bX2s/edit?usp=sharing'; // Replace with your Google Sheet URL
 
-    links.forEach((link, index) => {
-      const container = document.createElement('div');
-      container.className = 'pink-container';
-      container.textContent = index + 1; // Or display the link: container.textContent = link;
-      containersDisplay.appendChild(container);
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLinks();
     });
+
+    function fetchLinks() {
+        // Fetch data from the Google Sheet (replace with your actual fetch method)
+        fetch(googleSheetUrl)
+            .then(response => response.json())
+            .then(data => {
+                links = data;
+                displayLinks();
+            });
+    }
+
+    function displayLinks() {
+        containersDisplay.innerHTML = '';
+        links.forEach((linkObj, index) => {
+            const container = document.createElement('div');
+            container.className = 'pink-container';
+            container.textContent = index + 1; // Display the number
+
+            container.addEventListener('click', () => {
+                const password = prompt("Enter password for this link:");
+                if (password === linkObj.password) {
+                    window.open(linkObj.link, '_blank'); // Open the link in a new tab
+                } else {
+                    alert("Incorrect password.");
+                }
+            });
+
+            containersDisplay.appendChild(container);
+        });
+    }
+
+    // ... (rest of your JavaScript code)
   </script>
 </body>
 </html>

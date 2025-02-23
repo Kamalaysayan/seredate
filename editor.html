@@ -2,75 +2,69 @@
 <html>
 <head>
   <title>Editor</title>
-  <style>
-    .container {
-      display: flex;
-      flex-direction: column;
-    }
-    .link-container {
-      margin-bottom: 10px;
-    }
-    .add-link {
-      margin-top: 10px;
-    }
-    #link-input { /* Initially hide the input field */
-        display: none;
-    }
-  </style>
+  <style> /* ... your styles ... */ </style>
 </head>
 <body>
   <div class="container">
     <h2>Editor</h2>
-    <input type="text" id="link-input" placeholder="Paste Google Drive link">
-    <button onclick="addLink()">Add Link</button>
-    <div id="links-display">
-    </div>
-    <button class="add-link" onclick="showInput()">Add Link</button>
-    <button onclick="doneAdding()">Done</button> </div>
+    <input type="text" id="link-input" placeholder="Paste Google Drive link" style="display: none;">
+    <button onclick="showInput()">Add Link</button>
+    <div id="links-display"></div>
+    <button onclick="doneAdding()">Done</button>
+  </div>
 
   <script>
     const linkInput = document.getElementById('link-input');
     const linksDisplay = document.getElementById('links-display');
-    let links = []; // Array to store the links
+    let links = [];
 
-    // Function to load links from local storage on page load
-    window.addEventListener('DOMContentLoaded', (event) => {
-      const storedLinks = localStorage.getItem('links');
-      if (storedLinks) {
-        links = JSON.parse(storedLinks);
-        displayLinks();
-      }
+    const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/110s2w1CqnpapxSsyjpBP9R17uRiVpqTAWA6l3P1bX2s/edit?usp=sharing'; // Replace with your Google Sheet URL
+
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLinks(); // Fetch and display links on load
     });
 
-    function displayLinks() {
-        linksDisplay.innerHTML = ''; // Clear existing links
-        links.forEach(link => {
-            const linkContainer = document.createElement('div');
-            linkContainer.className = 'link-container';
-            linkContainer.textContent = link;
-            linksDisplay.appendChild(linkContainer);
-        });
+    function fetchLinks() {
+        // Fetch data from the Google Sheet (replace with your actual fetch method)
+        fetch(googleSheetUrl)
+            .then(response => response.json())
+            .then(data => {
+                links = data;
+                displayLinks();
+            });
     }
 
-    function addLink() {
-      const link = linkInput.value;
-      links.push(link); // Add link to the array
-      localStorage.setItem('links', JSON.stringify(links)); // Save links to local storage
-      displayLinks(); // Update the display
-      linkInput.value = '';
-      linkInput.style.display = 'none'; // Hide input after adding
+    function displayLinks() {
+        linksDisplay.innerHTML = '';
+        links.forEach(linkObj => {
+            const linkContainer = document.createElement('div');
+            linkContainer.className = 'link-container';
+            linkContainer.textContent = linkObj.link;
+            linksDisplay.appendChild(linkContainer);
+        });
     }
 
     function showInput() {
       linkInput.style.display = 'block';
     }
 
-    function doneAdding() {
-      // Redirect back to the editor's homepage
-      window.location.href = "editor.html"; // Replace with your actual homepage URL
+    function addLink() {
+      const link = linkInput.value;
+      // Here you would add the link to the Google Sheet (replace with your actual method)
+      // For this example, we'll just update the local links array
+      const newEntry = {
+        "link": link,
+        "password": String(links.length + 1).padStart(3, '0') // Generate password
+      };
+      links.push(newEntry);
+      displayLinks(); // Update the display
+      linkInput.value = '';
+      linkInput.style.display = 'none';
     }
 
-
+    function doneAdding() {
+      window.location.href = "editor.html"; // Or wherever your editor homepage is
+    }
   </script>
 </body>
 </html>
