@@ -1,53 +1,94 @@
-const fs = require('fs');
-const path = require('path');
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editor</title>
+    <style>
+        /* Existing styles */
+        .pink-container {
+            background-color: pink;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
 
-exports.handler = async (event, context) => {
-  if (event.httpMethod === 'POST') {
-    try {
-      const data = JSON.parse(event.body);
-      const link = data.link;
+        #done-button {
+            display: none;
+        }
 
-      const dataPath = path.join(__dirname, '../data.json');
-      let existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        /* Added styles to ensure elements are visible */
+        #link-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Editor Homepage</h2>
+    <div id="links-display"></div>
+    <button onclick="showInput()">Add Link</button>
+    <input type="text" id="link-input" placeholder="Paste Google Drive link">
+    <button id="done-button" onclick="doneAdding()">Done</button>
+</div>
 
-      const newEntry = {
-        "link": link,
-        "password": String(existingData.length + 1).padStart(3, '0')
-      };
-      existingData.push(newEntry);
+<script>
+    const linkInput = document.getElementById('link-input');
+    const linksDisplay = document.getElementById('links-display');
+    const doneButton = document.getElementById('done-button');
+    let links = [];
 
-      fs.writeFileSync(dataPath, JSON.stringify(existingData, null, 2));
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify(newEntry)
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to update links' })
-      };
+    function showInput() {
+        linkInput.style.display = 'block';
+        doneButton.style.display = 'block';
     }
-  } else if (event.httpMethod === 'GET') {
-      try {
-          const dataPath = path.join(__dirname, '../data.json');
-          const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-          return {
-              statusCode: 200,
-              body: JSON.stringify(existingData)
-          };
-      } catch (error) {
-          console.error("Error reading data.json:", error);
-          return {
-              statusCode: 500,
-              body: JSON.stringify({ error: 'Failed to fetch links' })
-          };
-      }
-  } else {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Only POST and GET requests allowed' })
-    };
-  }
-};
+
+    function doneAdding() {
+        const link = linkInput.value;
+
+        if (link) {
+            // Send the new link to the server
+            fetch('/.netlify/functions/update-links', {
+                method: 'POST',
+                body: JSON.stringify({ link: link }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(newLink => {
+                links.push(newLink);
+                displayLinks();
+                // Broadcast the new link to the customer page
+                const broadcast = new BroadcastChannel('newLink');
+                broadcast.postMessage(links);
+                linkInput.value = '';
+                linkInput.style.display = 'none';
+                doneButton.style.display = 'none';
+            })
+            .catch(error => console.error("Error adding link:", error));
+        } else {
+            alert('Please enter a link.');
+        }
+    }
+
+    function displayLinks() {
+        linksDisplay.innerHTML = ''; // Clear previous links
+
+        links.forEach((linkObj, index) => {
+            const linkContainer = document.createElement('div');
+            linkContainer.className = 'pink-container';
+            linkContainer.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link with number
+            linksDisplay.appendChild(linkContainer);
+        });
+    }
+
+    // Fetch existing links on load
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLinks();
+    });
+
+    function fetchLinks() {
+        fetch('/.netlify/functions/update-links', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                links =
