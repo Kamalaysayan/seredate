@@ -1,70 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor - KAMALAYSAYAN</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .white-container {
-            background-color: white;
-            padding: 20px;
-            border: 2px solid black;
-            width: 80%;
-            margin: 0 auto;
-            display: none;
-        }
-        #uploadedImage {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .image-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        .pink-container {
-            background-color: pink;
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            flex: 0 0 calc(33.33% - 20px);
-            box-sizing: border-box;
-        }
-        .pink-container img {
-            width: 100px;
-        }
-        .delete-button {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+  <title>Editor</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+    .link-container {
+      margin-bottom: 10px;
+    }
+    .add-link {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>KAMALAYSAYAN Editor</h1>
-        <button class="button" onclick="openAddImage()">Add Image</button>
+  <div class="container">
+    <h2>Editor</h2>
+    <input type="text" id="link-input" placeholder="Paste Google Drive link">
+    <button onclick="addLink()">Add Link</button>
+    <div id="links-display">
+      </div>
+    <button class="add-link" onclick="showInput()">Add Link</button>
+  </div>
 
-        <div id="whiteContainer" class="white-container">
-            <input type="file" id="fileInput" accept="image/*">
-            <div id="uploadedImageContainer" style="display: none;">
-                <img id="uploadedImage" src="" alt="Uploaded Image">
-                <button id="doneButton" class="button" onclick="markAsDone()">Done</button>
-            </div>
-        </div>
+  <script>
+    const linkInput = document.getElementById('link-input');
+    const linksDisplay = document.getElementById('links-display');
 
-        <div id="imageList" class="image-list">
-        </div>
-    </div>
-    <script src="scripts.js"></script>
+    function addLink() {
+      const link = linkInput.value;
+      // Here you would save the link to the database
+      // For this example, we'll just display it
+      const linkContainer = document.createElement('div');
+      linkContainer.className = 'link-container';
+      linkContainer.textContent = link;
+      linksDisplay.appendChild(linkContainer);
+      linkInput.value = '';
+    }
+
+    function showInput() {
+      linkInput.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
