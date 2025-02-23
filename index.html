@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMALAYSAYAN</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .title-container {
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="kamalaysayan.jpg" alt="Kamalaysayan Logo">
+        </div>
+        <div class="title-container">
+            <h1>KAMALAYSAYAN</h1>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="navigateToEditor()">Editor</button>  <button class="button" onclick="navigateToCustomer()">Customer</button>  </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>

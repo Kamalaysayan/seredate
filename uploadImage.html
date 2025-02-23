@@ -1,0 +1,33 @@
+<script>
+    async function uploadImage() {
+        const file = document.getElementById('fileInput').files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('uploadedImage').src = result.filePath;
+                    document.getElementById('uploadedImageContainer').style.display = 'block';
+                } else {
+                    alert('Failed to upload image.');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('An error occurred while uploading the image.');
+            }
+        } else {
+            alert('Please select a file.');
+        }
+    }
+
+    function markAsDone() {
+        window.location.href = 'editor.html';
+    }
+</script>
