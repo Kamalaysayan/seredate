@@ -3,7 +3,13 @@
 <head>
   <title>Customer</title>
   <style>
-    .pink-container { background-color: pink; padding: 10px; margin: 5px; display: inline-block; cursor: pointer; }
+    .pink-container {
+      background-color: pink;
+      padding: 10px;
+      margin: 5px;
+      display: inline-block;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -13,18 +19,43 @@
   </div>
 
   <script>
-    // ... (rest of the JavaScript code is the same as before)
+    const containersDisplay = document.getElementById('containers-display');
 
-    new BroadcastChannel('newLink').onmessage = event => {
-      if (event.data.deleted) { // Check if it's a delete notification
-        fetchLinks(); // Refresh links from data.json
-      } else {
-        links.push(event.data);
-        displayLinks();
-      }
-    };
+    window.addEventListener('DOMContentLoaded', () => {
+      const broadcast = new BroadcastChannel('newLink');
+      broadcast.onmessage = (event) => {
+        updateLinks(event.data);
+      };
+      
+      // Fetch initial links if needed
+      fetchLinks();
+    });
 
-    // ... (rest of the JavaScript code is the same as before)
+    function fetchLinks() {
+      // Implement fetching from data.json if needed
+      // For now, just an example to show the structure
+      const initialLinks = []; // Replace with actual fetch logic
+      updateLinks(initialLinks);
+    }
+
+    function updateLinks(links) {
+      containersDisplay.innerHTML = ''; // Clear previous links
+      links.forEach((linkObj, index) => {
+        const container = document.createElement('div');
+        container.className = 'pink-container';
+        container.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link
+        container.onclick = () => { 
+          const password = prompt("Enter password for this link:");
+          if (password === linkObj.password) {
+            window.open(linkObj.link, '_blank');
+          } else {
+            alert("Incorrect password.");
+          }
+        };
+        
+        containersDisplay.appendChild(container);
+      });
+    }
   </script>
 </body>
 </html>

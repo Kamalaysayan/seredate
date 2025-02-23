@@ -2,50 +2,52 @@ const fs = require('fs');
 const path = require('path');
 
 exports.handler = async (event, context) => {
-  const dataPath = path.join(__dirname, '../data.json');
+  if (event.httpMethod === 'POST') {
+    try {
+      const data = JSON.parse(event.body);
+      const link = data.link;
 
-  switch (event.httpMethod) {
-    case 'POST':  // Add new link
-      try {
-        const { link } = JSON.parse(event.body);
-        let existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        const newEntry = {
-          link,
-          password: String(existingData.length + 1).padStart(3, '0'),
-        };
-        existingData.push(newEntry);
-        fs.writeFileSync(dataPath, JSON.stringify(existingData, null, 2));
-        return { statusCode: 200, body: JSON.stringify(newEntry) };
-      } catch (error) {
-        console.error("POST Error:", error);
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-      }
-    case 'GET': // Fetch all links
-      try {
-        const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        return { statusCode: 200, body: JSON.stringify(existingData) };
-      } catch (error) {
-        console.error("GET Error:", error);
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-      }
-    case 'DELETE': // Delete a link
-      try {
-        const { index } = JSON.parse(event.body); // Get index to delete
-        let existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        if (index >= 0 && index < existingData.length) {
-          existingData.splice(index, 1); // Remove link at index
-        } else {
-          return { statusCode: 400, body: "Invalid index" };
-        }
+      const dataPath = path.join(__dirname, '../data.json');
+      let existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
-        fs.writeFileSync(dataPath, JSON.stringify(existingData, null, 2));
-        return { statusCode: 200, body: "Link deleted" };
-      } catch (error) {
-        console.error("DELETE Error:", error);
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-      }
+      const newEntry = {
+        "link": link,
+        "password": String(existingData.length + 1).padStart(3, '0')
+      };
+      existingData.push(newEntry);
 
-    default:
-      return { statusCode: 405, body: 'Method Not Allowed' };
+      fs.writeFileSync(dataPath, JSON.stringify(existingData, null, 2));
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(newEntry)
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to update links' })
+      };
+    }
+  } else if (event.httpMethod === 'GET') {
+      try {
+          const dataPath = path.join(__dirname, '../data.json');
+          const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+          return {
+              statusCode: 200,
+              body: JSON.stringify(existingData)
+          };
+      } catch (error) {
+          console.error("Error reading data.json:", error);
+          return {
+              statusCode: 500,
+              body: JSON.stringify({ error: 'Failed to fetch links' })
+          };
+      }
+  } else {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Only POST and GET requests allowed' })
+    };
   }
 };
