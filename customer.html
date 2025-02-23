@@ -18,7 +18,7 @@
   <div class="container">
     <h2>Customer</h2>
     <div id="containers-display">
-      </div>
+    </div>
   </div>
 
   <script>
@@ -35,67 +35,9 @@
     links.forEach((link, index) => {
       const container = document.createElement('div');
       container.className = 'pink-container';
-      container.textContent = index + 1;
+      container.textContent = index + 1; // Or display the link: container.textContent = link;
       containersDisplay.appendChild(container);
     });
   </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer - KAMALAYSAYAN</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>KAMALAYSAYAN</h1>
-        <div class="image-container">
-            <video id="preview" style="width: 100%; height: auto;"></video>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.3.1/jsQR.js"></script>
-    <script>
-        function startQrCodeReader() {
-            const video = document.getElementById('preview');
-            const canvasElement = document.createElement('canvas');
-            const canvas = canvasElement.getContext('2d');
-            let scanning = false;
-
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
-                scanning = true;
-                video.setAttribute('playsinline', true); // required to tell iOS safari we don't want fullscreen
-                video.srcObject = stream;
-                video.play();
-                requestAnimationFrame(tick);
-            });
-
-            function tick() {
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvasElement.height = video.videoHeight;
-                    canvasElement.width = video.videoWidth;
-                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-                    const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: "dontInvert",
-                    });
-                    if (code) {
-                        alert(`QR Code detected: ${code.data}`);
-                        video.srcObject.getTracks().forEach(track => track.stop());
-                        scanning = false;
-                    }
-                }
-                if (scanning) {
-                    requestAnimationFrame(tick);
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            startQrCodeReader();
-        });
-    </script>
 </body>
 </html>
