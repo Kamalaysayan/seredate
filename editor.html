@@ -82,6 +82,8 @@
     function doneAdding() {
       // Redirect back to the editor's homepage
       window.location.href = "editor.html";
+      // This line is crucial for updating the display after redirecting
+      setTimeout(fetchLinks, 0); // Fetch and display links after a short delay
     }
   </script>
 </body>
