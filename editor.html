@@ -3,16 +3,18 @@
 <head>
   <title>Editor</title>
   <style>
-    /* ... your styles ... */
     #link-input {
       display: none;
     }
-    .pink-container { /* Basic styling for the containers */
+    .pink-container {
       background-color: pink;
       padding: 10px;
       margin: 5px;
       display: inline-block;
-      cursor: pointer; /* Make them clickable */
+      cursor: pointer;
+    }
+    #done-button { /* Style for the Done button */
+      display: none; /* Initially hidden */
     }
   </style>
 </head>
@@ -20,38 +22,44 @@
   <div class="container">
     <h2>Editor</h2>
     <input type="text" id="link-input" placeholder="Paste Google Drive link">
-    <button onclick="addLink()">Add Link</button>
-    <div id="links-display"></div>
     <button onclick="showInput()">Add Link</button>
-    <button onclick="doneAdding()">Done</button>
+    <div id="links-display"></div>
+    <button id="done-button" onclick="doneAdding()">Done</button>
   </div>
 
   <script>
     const linkInput = document.getElementById('link-input');
     const linksDisplay = document.getElementById('links-display');
+    const doneButton = document.getElementById('done-button');
     let links = [];
 
     window.addEventListener('DOMContentLoaded', () => {
-      fetchLinks();
+        fetchLinks();
     });
 
     function fetchLinks() {
-      fetch('/data.json')
-        .then(response => response.json())
-        .then(data => {
-          links = data;
-          displayLinks();
-        });
+        fetch('/data.json')
+            .then(response => response.json())
+            .then(data => {
+                links = data;
+                displayLinks();
+            });
     }
 
+
     function displayLinks() {
-      linksDisplay.innerHTML = ''; // Clear previous links
+      linksDisplay.innerHTML = '';
       links.forEach((linkObj, index) => {
         const linkContainer = document.createElement('div');
         linkContainer.className = 'pink-container';
-        linkContainer.textContent = linkObj.link || (index + 1); // Display link or number
+        linkContainer.textContent = linkObj.link || (index + 1);
         linksDisplay.appendChild(linkContainer);
       });
+        if (links.length > 0) {
+            doneButton.style.display = 'block'; // Show Done if links exist
+        } else {
+            doneButton.style.display = 'none'; // Hide Done if no links
+        }
     }
 
     function showInput() {
@@ -68,11 +76,9 @@
         .then(response => response.json())
         .then(newLink => {
           links.push(newLink);
-          displayLinks(); // Update the display on the editor's page
-          // Notify the customer page about the new link (using BroadcastChannel)
+          displayLinks();
           const broadcast = new BroadcastChannel('newLink');
           broadcast.postMessage(newLink);
-
           linkInput.value = '';
           linkInput.style.display = 'none';
         })
@@ -80,10 +86,7 @@
     }
 
     function doneAdding() {
-      // Redirect back to the editor's homepage
-      window.location.href = "editor.html";
-      // This line is crucial for updating the display after redirecting
-      setTimeout(fetchLinks, 0); // Fetch and display links after a short delay
+        fetchLinks(); // Refresh links to update display
     }
   </script>
 </body>

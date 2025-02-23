@@ -29,22 +29,21 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ error: 'Failed to update links' })
       };
     }
-  } else if (event.httpMethod === 'GET') { // Add GET method for fetching data
-    try {
-      const dataPath = path.join(__dirname, '../data.json');
-      const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify(existingData)
+  } else if (event.httpMethod === 'GET') {
+      try {
+          const dataPath = path.join(__dirname, '../data.json');
+          const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+          return {
+              statusCode: 200,
+              body: JSON.stringify(existingData)
+          };
+      } catch (error) {
+          console.error("Error reading data.json:", error);
+          return {
+              statusCode: 500,
+              body: JSON.stringify({ error: 'Failed to fetch links' })
+          };
       }
-    } catch (error) {
-      console.error(error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to fetch links' })
-      }
-    }
   } else {
     return {
       statusCode: 405,
