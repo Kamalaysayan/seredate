@@ -30,7 +30,7 @@
     <div id="links-display"></div>
     <button onclick="showInput()">Add Link</button>
     <input type="text" id="link-input" placeholder="Paste Google Drive link">
-    <button id="done-button" onclick="addLink()">Done</button>
+    <button id="done-button" onclick="doneAdding()">Done</button>
 </div>
 
 <script>
@@ -44,7 +44,7 @@
         doneButton.style.display = 'block';
     }
 
-    function addLink() {
+    function doneAdding() {
         const link = linkInput.value;
 
         if (link) {
@@ -58,6 +58,7 @@
             })
             .then(response => response.json())
             .then(newLink => {
+                // Update the local links array
                 links.push(newLink);
                 displayLinks();
                 // Broadcast the new link to the customer page
