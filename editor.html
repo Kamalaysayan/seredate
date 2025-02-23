@@ -41,7 +41,7 @@
         const link = linkInput.value.trim();
 
         if (link) {
-            fetch('/api/links', {
+            fetch('/.netlify/functions/update-links', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,14 +50,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    linkInput.value = '';
-                    linkInput.style.display = 'none';
-                    doneButton.style.display = 'none';
-                    fetchLinks(); // Refresh the displayed links
-                } else {
-                    alert('Failed to save link.');
-                }
+                linkInput.value = '';
+                linkInput.style.display = 'none';
+                doneButton.style.display = 'none';
+                fetchLinks(); // Refresh the displayed links
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -68,7 +64,7 @@
     }
 
     function fetchLinks() {
-        fetch('/api/links')
+        fetch('/.netlify/functions/update-links')
             .then(response => response.json())
             .then(links => {
                 displayLinks(links);

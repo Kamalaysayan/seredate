@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer</title>
     <style>
         .pink-container {
@@ -25,19 +24,10 @@
     <script>
         const containersDisplay = document.getElementById('containers-display');
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchLinks();
-
-            const broadcast = new BroadcastChannel('newLink');
-            broadcast.onmessage = (event) => {
-                fetchLinks(); // Refresh the list when a new link is added
-            };
-        });
-
         function fetchLinks() {
-            fetch('/api/links', { method: 'GET' })
+            fetch('/.netlify/functions/update-links')
                 .then(response => response.json())
-                .then(data => displayLinks(data))
+                .then(links => displayLinks(links))
                 .catch(error => console.error("Error fetching links:", error));
         }
 
@@ -51,6 +41,13 @@
                 containersDisplay.appendChild(container);
             });
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLinks();
+
+            // Real-time updates using polling every 5 seconds
+            setInterval(fetchLinks, 5000);
+        });
     </script>
 </body>
 </html>
