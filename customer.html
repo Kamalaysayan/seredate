@@ -11,8 +11,8 @@
             margin: 5px;
             display: inline-block;
             cursor: pointer;
-            text-decoration: none; /* Remove underline from links */
-            color: black; /* Set text color to black */
+            text-decoration: none;
+            color: black;
         }
     </style>
 </head>
@@ -35,20 +35,19 @@
         });
 
         function fetchLinks() {
-            fetch('/.netlify/functions/update-links', { method: 'GET' })
+            fetch('/api/links', { method: 'GET' })
                 .then(response => response.json())
                 .then(data => displayLinks(data))
                 .catch(error => console.error("Error fetching links:", error));
         }
 
         function displayLinks(links) {
-            containersDisplay.innerHTML = ''; // Clear previous links
+            containersDisplay.innerHTML = '';
             links.forEach((linkObj, index) => {
-                const container = document.createElement('a'); // Use <a> tag for links
-                container.href = linkObj.link; // Set the link
-                container.target = "_blank"; // Open in new tab
+                const container = document.createElement('div');
                 container.className = 'pink-container';
-                container.textContent = `${index + 1}`; // Display only the number
+                container.textContent = `${index + 1}`;
+                container.onclick = () => window.open(linkObj.link, '_blank');
                 containersDisplay.appendChild(container);
             });
         }

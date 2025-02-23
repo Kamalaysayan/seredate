@@ -3,7 +3,6 @@
 <head>
     <title>Editor</title>
     <style>
-        /* Existing styles */
         .pink-container {
             background-color: pink;
             padding: 10px;
@@ -11,12 +10,9 @@
             display: inline-block;
             cursor: pointer;
         }
-
         #done-button {
             display: none;
         }
-
-        /* Added styles to ensure elements are visible */
         #link-input {
             display: none;
         }
@@ -35,53 +31,64 @@
     const linkInput = document.getElementById('link-input');
     const linksDisplay = document.getElementById('links-display');
     const doneButton = document.getElementById('done-button');
-    let links = [];
 
     function showInput() {
         linkInput.style.display = 'block';
-        doneButton.style.display = 'block';
+        doneButton.style.display = 'inline-block';
     }
 
     function doneAdding() {
-        const link = linkInput.value;
+        const link = linkInput.value.trim();
 
         if (link) {
-            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
-            displayLinks();
-            linkInput.value = '';
-            linkInput.style.display = 'none';
-            doneButton.style.display = 'none';
+            fetch('/api/links', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ link })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    linkInput.value = '';
+                    linkInput.style.display = 'none';
+                    doneButton.style.display = 'none';
+                    fetchLinks(); // Refresh the displayed links
+                } else {
+                    alert('Failed to save link.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         } else {
             alert('Please enter a link.');
         }
     }
 
-    function displayLinks() {
-        linksDisplay.innerHTML = ''; // Clear previous links
+    function fetchLinks() {
+        fetch('/api/links')
+            .then(response => response.json())
+            .then(links => {
+                displayLinks(links);
+            });
+    }
 
+    function displayLinks(links) {
+        linksDisplay.innerHTML = '';
         links.forEach((linkObj, index) => {
             const linkContainer = document.createElement('div');
             linkContainer.className = 'pink-container';
-            linkContainer.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link with number
+            linkContainer.textContent = `${index + 1}`;
+            linkContainer.onclick = () => window.open(linkObj.link, '_blank');
             linksDisplay.appendChild(linkContainer);
         });
-
-        // Update customer page (broadcast new links)
-        const broadcast = new BroadcastChannel('newLink');
-        broadcast.postMessage(links);
     }
 
-    // Fetch existing links on load (optional)
     window.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     });
-
-    function fetchLinks() {
-        // You can implement this to fetch existing links from data.json if needed
-        // For now, let's add a dummy link for testing
-        links.push({link: "https://example.com", password: "001"});
-        displayLinks();
-    }
 </script>
 </body>
 </html>
