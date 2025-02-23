@@ -47,7 +47,9 @@
     }
 
     function displayLinks() {
-        linksDisplay.innerHTML = '';
+        linksDisplay.innerHTML = ''; // Clear previous links
+
+        // Iterate through the links and create containers
         links.forEach((linkObj, index) => {
             const linkContainer = document.createElement('div');
             linkContainer.className = 'pink-container';
@@ -56,11 +58,7 @@
         });
 
         // Show "Done" button only if there are links
-        if (links.length > 0) {
-            doneButton.style.display = 'block';
-        } else {
-            doneButton.style.display = 'none';
-        }
+        doneButton.style.display = links.length > 0 ? 'block' : 'none';
     }
 
     function showInput() {
@@ -77,7 +75,7 @@
             .then(response => response.json())
             .then(newLink => {
                 links.push(newLink);
-                displayLinks();
+                displayLinks(); // Update the display immediately
                 const broadcast = new BroadcastChannel('newLink');
                 broadcast.postMessage(newLink);
                 linkInput.value = '';
