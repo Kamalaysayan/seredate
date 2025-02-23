@@ -13,6 +13,9 @@
     .add-link {
       margin-top: 10px;
     }
+    #link-input { /* Initially hide the input field */
+        display: none;
+    }
   </style>
 </head>
 <body>
@@ -21,28 +24,53 @@
     <input type="text" id="link-input" placeholder="Paste Google Drive link">
     <button onclick="addLink()">Add Link</button>
     <div id="links-display">
-      </div>
+    </div>
     <button class="add-link" onclick="showInput()">Add Link</button>
-  </div>
+    <button onclick="doneAdding()">Done</button> </div>
 
   <script>
     const linkInput = document.getElementById('link-input');
     const linksDisplay = document.getElementById('links-display');
+    let links = []; // Array to store the links
+
+    // Function to load links from local storage on page load
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const storedLinks = localStorage.getItem('links');
+      if (storedLinks) {
+        links = JSON.parse(storedLinks);
+        displayLinks();
+      }
+    });
+
+    function displayLinks() {
+        linksDisplay.innerHTML = ''; // Clear existing links
+        links.forEach(link => {
+            const linkContainer = document.createElement('div');
+            linkContainer.className = 'link-container';
+            linkContainer.textContent = link;
+            linksDisplay.appendChild(linkContainer);
+        });
+    }
 
     function addLink() {
       const link = linkInput.value;
-      // Here you would save the link to the database
-      // For this example, we'll just display it
-      const linkContainer = document.createElement('div');
-      linkContainer.className = 'link-container';
-      linkContainer.textContent = link;
-      linksDisplay.appendChild(linkContainer);
+      links.push(link); // Add link to the array
+      localStorage.setItem('links', JSON.stringify(links)); // Save links to local storage
+      displayLinks(); // Update the display
       linkInput.value = '';
+      linkInput.style.display = 'none'; // Hide input after adding
     }
 
     function showInput() {
       linkInput.style.display = 'block';
     }
+
+    function doneAdding() {
+      // Redirect back to the editor's homepage
+      window.location.href = "editor.html"; // Replace with your actual homepage URL
+    }
+
+
   </script>
 </body>
 </html>
