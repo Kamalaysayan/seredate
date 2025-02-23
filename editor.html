@@ -10,6 +10,8 @@
             margin: 5px;
             display: inline-block;
             cursor: pointer;
+            text-decoration: none; /* Remove underline from links */
+            color: black; /* Set text color to black */
         }
 
         #done-button {
@@ -28,7 +30,7 @@
     <div id="links-display"></div>
     <button onclick="showInput()">Add Link</button>
     <input type="text" id="link-input" placeholder="Paste Google Drive link">
-    <button id="done-button" onclick="doneAdding()">Done</button>
+    <button id="done-button" onclick="addLink()">Done</button>
 </div>
 
 <script>
@@ -42,15 +44,30 @@
         doneButton.style.display = 'block';
     }
 
-    function doneAdding() {
+    function addLink() {
         const link = linkInput.value;
 
         if (link) {
-            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
-            displayLinks();
-            linkInput.value = '';
-            linkInput.style.display = 'none';
-            doneButton.style.display = 'none';
+            // Send the new link to the server
+            fetch('/.netlify/functions/update-links', {
+                method: 'POST',
+                body: JSON.stringify({ link: link }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(newLink => {
+                links.push(newLink);
+                displayLinks();
+                // Broadcast the new link to the customer page
+                const broadcast = new BroadcastChannel('newLink');
+                broadcast.postMessage(links);
+                linkInput.value = '';
+                linkInput.style.display = 'none';
+                doneButton.style.display = 'none';
+            })
+            .catch(error => console.error("Error adding link:", error));
         } else {
             alert('Please enter a link.');
         }
@@ -60,27 +77,28 @@
         linksDisplay.innerHTML = ''; // Clear previous links
 
         links.forEach((linkObj, index) => {
-            const linkContainer = document.createElement('div');
+            const linkContainer = document.createElement('a'); // Use <a> tag for links
+            linkContainer.href = linkObj.link; // Set the link
+            linkContainer.target = "_blank"; // Open in new tab
             linkContainer.className = 'pink-container';
-            linkContainer.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link with number
+            linkContainer.textContent = `${index + 1}`; // Display only the number
             linksDisplay.appendChild(linkContainer);
         });
-
-        // Update customer page (broadcast new links)
-        const broadcast = new BroadcastChannel('newLink');
-        broadcast.postMessage(links);
     }
 
-    // Fetch existing links on load (optional)
+    // Fetch existing links on load
     window.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     });
 
     function fetchLinks() {
-        // You can implement this to fetch existing links from data.json if needed
-        // For now, let's add a dummy link for testing
-        links.push({link: "https://example.com", password: "001"});
-        displayLinks();
+        fetch('/.netlify/functions/update-links', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                links = data; // Store fetched links in the array
+                displayLinks(); // Display fetched links
+            })
+            .catch(error => console.error("Error fetching links:", error));
     }
 </script>
 </body>

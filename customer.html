@@ -11,6 +11,8 @@
             margin: 5px;
             display: inline-block;
             cursor: pointer;
+            text-decoration: none; /* Remove underline from links */
+            color: black; /* Set text color to black */
         }
     </style>
 </head>
@@ -42,18 +44,11 @@
         function displayLinks(links) {
             containersDisplay.innerHTML = ''; // Clear previous links
             links.forEach((linkObj, index) => {
-                const container = document.createElement('div');
+                const container = document.createElement('a'); // Use <a> tag for links
+                container.href = linkObj.link; // Set the link
+                container.target = "_blank"; // Open in new tab
                 container.className = 'pink-container';
-                container.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link
-                container.onclick = () => { 
-                    const password = prompt("Enter password for this link:");
-                    if (password === linkObj.password) {
-                        window.open(linkObj.link, '_blank');
-                    } else {
-                        alert("Incorrect password.");
-                    }
-                };
-
+                container.textContent = `${index + 1}`; // Display only the number
                 containersDisplay.appendChild(container);
             });
         }
