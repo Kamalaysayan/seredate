@@ -1,0 +1,46 @@
+body {
+    background-color: #fdeef4;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    text-align: center;
+}
+.button {
+    background-color: #ff69b4;
+    color: white;
+    padding: 15px 30px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+.button:hover {
+    background-color: #ff1493;
+}
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+.download-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #ff69b4;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+.qr-button {
+    background-color: #ff69b4;
+    color: white;
+    padding: 15px 30px;
+    margin: 20px 0;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
