@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">  <head>
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
@@ -20,10 +19,9 @@
     </div>
 
     <script>
-        let linksDisplay; // Declare linksDisplay at the top (important!)
-        let linkInput;  // Declare linkInput
-        let doneButton; // Declare doneButton
-
+        let linksDisplay;
+        let linkInput;
+        let doneButton;
 
         function doneAdding() {
             const link = linkInput.value;
@@ -55,23 +53,28 @@
             fetch('/.netlify/functions/update-links')
                 .then(response => response.json())
                 .then(fetchedLinks => {
-                    linksDisplay.innerHTML = '';
-                    fetchedLinks.forEach((linkObj, index) => {
-                        const linkContainer = document.createElement('div');
-                        linkContainer.className = 'pink-container';
-                        linkContainer.textContent = `${index + 1}`;
-                        linkContainer.onclick = () => window.open(linkObj.link, '_blank');
-                        linksDisplay.appendChild(linkContainer);
-                    });
+                    if (Array.isArray(fetchedLinks)) { // Check if it's an array
+                        linksDisplay.innerHTML = '';
+                        fetchedLinks.forEach((linkObj, index) => {
+                            const linkContainer = document.createElement('div');
+                            linkContainer.className = 'pink-container';
+                            linkContainer.textContent = `${index + 1}`;
+                            linkContainer.onclick = () => window.open(linkObj.link, '_blank');
+                            linksDisplay.appendChild(linkContainer);
+                        });
+                    } else {
+                        console.error("fetchedLinks is not an array:", fetchedLinks);
+                        linksDisplay.innerHTML = "<p>Error loading links.</p>";
+                    }
                 })
                 .catch(error => console.error("Error fetching links:", error));
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            linksDisplay = document.getElementById('links-display'); // Assign the element
-            linkInput = document.getElementById('link-input'); // Assign the element
-            doneButton = document.getElementById('done-button'); // Assign the element
-            displayLinks(); // Call displayLinks here
+            linksDisplay = document.getElementById('links-display');
+            linkInput = document.getElementById('link-input');
+            doneButton = document.getElementById('done-button');
+            displayLinks();
         });
     </script>
 </body>
