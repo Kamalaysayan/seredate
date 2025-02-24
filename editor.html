@@ -3,7 +3,6 @@
 <head>
     <title>Editor</title>
     <style>
-        /* Existing styles */
         .pink-container {
             background-color: pink;
             padding: 10px;
@@ -11,12 +10,9 @@
             display: inline-block;
             cursor: pointer;
         }
-
         #done-button {
             display: none;
         }
-
-        /* Added styles to ensure elements are visible */
         #link-input {
             display: none;
         }
@@ -46,7 +42,7 @@
         const link = linkInput.value.trim();
 
         if (link) {
-            fetch('/.netlify/functions/update-links', {
+            fetch('/api/links', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -71,7 +67,7 @@
     }
 
     function fetchLinks() {
-        fetch('/.netlify/functions/update-links')
+        fetch('/api/links')
             .then(response => response.json())
             .then(data => {
                 links = data;
