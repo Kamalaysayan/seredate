@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <style>
         /* ... your styles ... */
-        #link-input,
-        #done-button {
+        #link-input, #done-button {
             display: none;
-            /* Initially hide the input and button */
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="title-container">
@@ -36,63 +32,74 @@
             doneButton.style.display = 'block';
         }
 
-        function doneAdding() {
+        async function doneAdding() {
             const link = linkInput.value;
             if (link) {
-                fetch('/.netlify/functions/update-links', { // Correct path for local development
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        link: link
-                    })
-                })
-                .then(response => response.json())
-                .then(newLink => {
+                try {
+                    const response = await fetch('/.netlify/functions/update-links', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ link })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Failed to add link: ${response.status} - ${errorData.error || response.statusText}`);
+                    }
+
+                    const newLink = await response.json();
                     displayLinks();
                     const broadcast = new BroadcastChannel('newLink');
                     broadcast.postMessage(newLink);
                     linkInput.value = '';
-                    linkInput.style.display = 'none'; // Hide input after adding
-                    doneButton.style.display = 'none'; // Hide button after adding
-                })
-                .catch(error => console.error("Error adding link:", error));
+                    linkInput.style.display = 'none';
+                    doneButton.style.display = 'none';
+                } catch (error) {
+                    console.error("Error adding link:", error);
+                    alert(error.message);
+                }
             } else {
                 alert('Please enter a link.');
             }
         }
 
-        function displayLinks() {
-            fetch('/.netlify/functions/update-links', { // Correct path for local development
+        async function displayLinks() {
+            try {
+                const response = await fetch('/.netlify/functions/update-links', {
                     method: 'GET'
-                })
-                .then(response => response.json())
-                .then(fetchedLinks => {
-                    if (Array.isArray(fetchedLinks)) {
-                        linksDisplay.innerHTML = '';
-                        fetchedLinks.forEach((linkObj, index) => {
-                            const linkContainer = document.createElement('div');
-                            linkContainer.className = 'pink-container';
-                            linkContainer.textContent = `${index + 1}`;
-                            linkContainer.onclick = () => window.open(linkObj.link, '_blank');
-                            linksDisplay.appendChild(linkContainer);
-                        });
-                    } else {
-                        console.error("fetchedLinks is not an array:", fetchedLinks);
-                        linksDisplay.innerHTML = "<p>Error loading links.</p>";
-                    }
-                })
-                .catch(error => console.error("Error fetching links:", error));
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch links: ${response.status}`);
+                }
+
+                const fetchedLinks = await response.json();
+
+                if (Array.isArray(fetchedLinks)) {
+                    linksDisplay.innerHTML = ''; // Clear existing containers
+                    fetchedLinks.forEach((linkObj, index) => {
+                        const linkContainer = document.createElement('div');
+                        linkContainer.className = 'pink-container';
+                        linkContainer.textContent = `${index + 1}`;
+                        linkContainer.onclick = () => window.open(linkObj.link, '_blank');
+                        linksDisplay.appendChild(linkContainer);
+                    });
+                } else {
+                    console.error("fetchedLinks is not an array:", fetchedLinks);
+                    linksDisplay.innerHTML = "<p>Error loading links. Please try again later.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching links:", error);
+                linksDisplay.innerHTML = "<p>Error loading links. Please try again later.</p>";
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             linksDisplay = document.getElementById('links-display');
             linkInput = document.getElementById('link-input');
             doneButton = document.getElementById('done-button');
-            displayLinks();
+            displayLinks(); // Call displayLinks on initial load
         });
     </script>
 </body>
-
 </html>

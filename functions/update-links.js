@@ -1,44 +1,32 @@
-const fs = require('fs'); // Import the file system module
+const fs = require('fs');
 
 exports.handler = async (event) => {
     try {
         const method = event.httpMethod;
+        const filePath = './data.json'; // Path to data.json
 
         if (method === 'GET') {
-            // Read data from data.json
-            const data = JSON.parse(fs.readFileSync('./data.json', 'utf8'));
-
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             return {
                 statusCode: 200,
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             };
         } else if (method === 'POST') {
-            // Add new link to data.json
-            const {
-                link
-            } = JSON.parse(event.body);
-            const data = JSON.parse(fs.readFileSync('./data.json', 'utf8'));
+            const { link } = JSON.parse(event.body);
+            let data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-            data.push({
-                link
-            });
-            fs.writeFileSync('./data.json', JSON.stringify(data, null, 2));
+            data.push({ link });
+            fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 
             return {
                 statusCode: 200,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    link
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ link })
             };
         } else {
             return {
-                statusCode: 405, // Method Not Allowed
+                statusCode: 405,
                 body: "Method Not Allowed"
             };
         }
@@ -46,12 +34,8 @@ exports.handler = async (event) => {
         console.error("Error in function:", error);
         return {
             statusCode: 500,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                error: "An error occurred"
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ error: error.message }) // Include error message
         };
     }
 };
