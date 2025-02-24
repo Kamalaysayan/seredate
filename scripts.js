@@ -1,6 +1,6 @@
 async function navigateToEditor() {
     const password = prompt('Enter password:');
-    if (password === 'Kamalaysayan@2025') {
+    if (password === 'cess') {
         window.location.href = 'editor.html';
     } else {
         alert('Incorrect password');
