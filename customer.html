@@ -45,8 +45,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             fetchLinks();
 
-            // Real-time updates using polling every 5 seconds
-            setInterval(fetchLinks, 5000);
+            const broadcast = new BroadcastChannel('newLink');
+            broadcast.onmessage = (event) => {
+                fetchLinks(); // Refresh the list when a new link is added
+            };
         });
     </script>
 </body>

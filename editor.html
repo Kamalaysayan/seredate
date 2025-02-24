@@ -62,7 +62,8 @@
         links.forEach((linkObj, index) => {
             const linkContainer = document.createElement('div');
             linkContainer.className = 'pink-container';
-            linkContainer.textContent = `${index + 1}: ${linkObj.link}`; // Display the actual link with number
+            linkContainer.textContent = `${index + 1}`;
+            linkContainer.onclick = () => window.open(linkObj.link, '_blank');
             linksDisplay.appendChild(linkContainer);
         });
 
