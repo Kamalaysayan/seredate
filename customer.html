@@ -6,13 +6,12 @@
     <style>
         .pink-container {
             background-color: pink;
-            padding: 20px; /* Pinalaki ang padding para mas malaki */
-            margin: 10px;  /* Pinalaki ang margin para mas malaki */
+            padding: 10px;
+            margin: 5px;
             display: inline-block;
             cursor: pointer;
             text-decoration: none;
             color: black;
-            font-size: 20px; /* Pinalaki ang font size para mas kita */
         }
     </style>
 </head>
@@ -26,9 +25,9 @@
         const containersDisplay = document.getElementById('containers-display');
 
         function fetchLinks() {
-            fetch('/api/links')
+            fetch('/.netlify/functions/update-links')
                 .then(response => response.json())
-                .then(data => displayLinks(data))
+                .then(links => displayLinks(links))
                 .catch(error => console.error("Error fetching links:", error));
         }
 

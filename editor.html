@@ -6,11 +6,10 @@
         /* Existing styles */
         .pink-container {
             background-color: pink;
-            padding: 20px; /* Pinalaki ang padding para mas malaki */
-            margin: 10px;  /* Pinalaki ang margin para mas malaki */
+            padding: 10px;
+            margin: 5px;
             display: inline-block;
             cursor: pointer;
-            font-size: 20px; /* Pinalaki ang font size para mas kita */
         }
 
         #done-button {
@@ -44,40 +43,17 @@
     }
 
     function doneAdding() {
-        const link = linkInput.value.trim();
+        const link = linkInput.value;
 
         if (link) {
-            fetch('/api/links', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ link })
-            })
-            .then(response => response.json())
-            .then(data => {
-                fetchLinks(); // Refresh the displayed links
-                broadcastUpdate(); // Notify customers
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
+            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
+            displayLinks();
             linkInput.value = '';
             linkInput.style.display = 'none';
             doneButton.style.display = 'none';
         } else {
             alert('Please enter a link.');
         }
-    }
-
-    function fetchLinks() {
-        fetch('/api/links')
-            .then(response => response.json())
-            .then(data => {
-                links = data;
-                displayLinks();
-            });
     }
 
     function displayLinks() {
@@ -90,16 +66,23 @@
             linkContainer.onclick = () => window.open(linkObj.link, '_blank');
             linksDisplay.appendChild(linkContainer);
         });
-    }
 
-    function broadcastUpdate() {
+        // Update customer page (broadcast new links)
         const broadcast = new BroadcastChannel('newLink');
-        broadcast.postMessage('update');
+        broadcast.postMessage(links);
     }
 
+    // Fetch existing links on load (optional)
     window.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     });
+
+    function fetchLinks() {
+        // You can implement this to fetch existing links from data.json if needed
+        // For now, let's add a dummy link for testing
+        links.push({link: "https://example.com", password: "001"});
+        displayLinks();
+    }
 </script>
 </body>
 </html>
