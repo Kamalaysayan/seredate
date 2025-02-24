@@ -35,7 +35,7 @@
         function doneAdding() {
             const link = linkInput.value;
             if (link) {
-                fetch('/.netlify/functions/update-links', {
+                fetch('/.netlify/functions/update-links', { // Correct path for local development
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -60,7 +60,9 @@
         }
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links')
+            fetch('/.netlify/functions/update-links', { // Correct path for local development
+                    method: 'GET'
+                })
                 .then(response => response.json())
                 .then(fetchedLinks => {
                     if (Array.isArray(fetchedLinks)) {
