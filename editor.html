@@ -48,7 +48,7 @@
                     }
 
                     const newLink = await response.json();
-                    displayLinks();
+                    displayLinks(); // Refresh the list of links
                     const broadcast = new BroadcastChannel('newLink');
                     broadcast.postMessage(newLink);
                     linkInput.value = '';
@@ -76,7 +76,7 @@
                 const fetchedLinks = await response.json();
 
                 if (Array.isArray(fetchedLinks)) {
-                    linksDisplay.innerHTML = ''; // Clear existing containers
+                    linksDisplay.innerHTML = '';
                     fetchedLinks.forEach((linkObj, index) => {
                         const linkContainer = document.createElement('div');
                         linkContainer.className = 'pink-container';
@@ -98,7 +98,7 @@
             linksDisplay = document.getElementById('links-display');
             linkInput = document.getElementById('link-input');
             doneButton = document.getElementById('done-button');
-            displayLinks(); // Call displayLinks on initial load
+            displayLinks();
         });
     </script>
 </body>
