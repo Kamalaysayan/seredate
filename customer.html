@@ -18,9 +18,9 @@
         function displayLinks() {
             fetch('/.netlify/functions/update-links')
             .then(response => response.json())
-            .then(links => {
+            .then(fetchedLinks => { // Use fetchedLinks here!
                 containersDisplay.innerHTML = '';
-                links.forEach((linkObj, index) => {
+                fetchedLinks.forEach((linkObj, index) => { // Iterate over fetchedLinks
                     const container = document.createElement('div');
                     container.className = 'pink-container';
                     container.textContent = `${index + 1}`;
@@ -32,10 +32,9 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            displayLinks(); // Initial fetch
+            displayLinks();
 
-            // "Near" Real-time updates (using setInterval - adjust interval as needed)
-            setInterval(displayLinks, 5000); // Fetch and update every 5 seconds
+            setInterval(displayLinks, 5000);
         });
     </script>
 </body>

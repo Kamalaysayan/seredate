@@ -22,7 +22,7 @@
             const link = linkInput.value;
 
             if (link) {
-                fetch('/.netlify/functions/update-links', { // Use the Netlify function
+                fetch('/.netlify/functions/update-links', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -43,11 +43,11 @@
         }
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links') // Fetch from Netlify function
+            fetch('/.netlify/functions/update-links')
             .then(response => response.json())
-            .then(links => {
+            .then(fetchedLinks => { // Use fetchedLinks here!
                 linksDisplay.innerHTML = '';
-                links.forEach((linkObj, index) => {
+                fetchedLinks.forEach((linkObj, index) => { // Iterate over fetchedLinks
                     const linkContainer = document.createElement('div');
                     linkContainer.className = 'pink-container';
                     linkContainer.textContent = `${index + 1}`;
@@ -58,9 +58,8 @@
             .catch(error => console.error("Error fetching links:", error));
         }
 
-
         window.addEventListener('DOMContentLoaded', () => {
-            displayLinks(); // Call displayLinks on load
+            displayLinks();
         });
 
     </script>
