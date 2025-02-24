@@ -6,7 +6,7 @@
         /* Existing styles */
         .pink-container {
             background-color: pink;
-            padding: 10px;
+            padding: 5x;
             margin: 5px;
             display: inline-block;
             cursor: pointer;
@@ -43,17 +43,40 @@
     }
 
     function doneAdding() {
-        const link = linkInput.value;
+        const link = linkInput.value.trim();
 
         if (link) {
-            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
-            displayLinks();
+            fetch('/.netlify/functions/update-links', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ link })
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchLinks(); // Refresh the displayed links
+                broadcastUpdate(); // Notify customers
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
             linkInput.value = '';
             linkInput.style.display = 'none';
             doneButton.style.display = 'none';
         } else {
             alert('Please enter a link.');
         }
+    }
+
+    function fetchLinks() {
+        fetch('/.netlify/functions/update-links')
+            .then(response => response.json())
+            .then(data => {
+                links = data;
+                displayLinks();
+            });
     }
 
     function displayLinks() {
@@ -66,23 +89,16 @@
             linkContainer.onclick = () => window.open(linkObj.link, '_blank');
             linksDisplay.appendChild(linkContainer);
         });
-
-        // Update customer page (broadcast new links)
-        const broadcast = new BroadcastChannel('newLink');
-        broadcast.postMessage(links);
     }
 
-    // Fetch existing links on load (optional)
+    function broadcastUpdate() {
+        const broadcast = new BroadcastChannel('newLink');
+        broadcast.postMessage('update');
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     });
-
-    function fetchLinks() {
-        // You can implement this to fetch existing links from data.json if needed
-        // For now, let's add a dummy link for testing
-        links.push({link: "https://example.com", password: "001"});
-        displayLinks();
-    }
 </script>
 </body>
 </html>

@@ -27,7 +27,7 @@
         function fetchLinks() {
             fetch('/.netlify/functions/update-links')
                 .then(response => response.json())
-                .then(links => displayLinks(links))
+                .then(data => displayLinks(data))
                 .catch(error => console.error("Error fetching links:", error));
         }
 
