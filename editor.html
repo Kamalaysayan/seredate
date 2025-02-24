@@ -3,11 +3,23 @@
 <head>
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css"> </head>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #links-display {
+            margin-top: 20px; /* Add some space below the title */
+            display: flex; /* Use flexbox for horizontal layout */
+            flex-wrap: wrap; /* Allow containers to wrap */
+            justify-content: center; /* Center the containers */
+        }
+        .pink-container {
+            /* ... existing styles ... */
+            margin: 10px; /* Add some margin around containers */
+        }
+    </style>
+</head>
 <body>
     <div class="container">
-        <h2>Editor Homepage</h2>
-        <div id="links-display"></div>
+        <div class="title-container"> <h1>KAMALAYSAYAN</h1> </div> <div id="links-display"></div>
         <button onclick="showInput()">Add Link</button>
         <input type="text" id="link-input" placeholder="Paste Google Drive link">
         <button id="done-button" onclick="doneAdding()">Done</button>
@@ -18,7 +30,6 @@
 
         function doneAdding() {
             const link = linkInput.value;
-
             if (link) {
                 fetch('/.netlify/functions/update-links', {
                     method: 'POST',
@@ -27,10 +38,9 @@
                 })
                 .then(response => response.json())
                 .then(newLink => {
-                    displayLinks(); // Call displayLinks() to update the view!
-                    // Broadcast the update (for customer page)
+                    displayLinks();
                     const broadcast = new BroadcastChannel('newLink');
-                    broadcast.postMessage(newLink); // Send the new link data
+                    broadcast.postMessage(newLink);
                     linkInput.value = '';
                     linkInput.style.display = 'none';
                     doneButton.style.display = 'none';
