@@ -3,95 +3,66 @@
 <head>
     <title>Editor</title>
     <style>
-        /* Existing styles */
-        .pink-container {
-            background-color: pink;
-            padding: 10px;
-            margin: 5px;
-            display: inline-block;
-            cursor: pointer;
-            /* Added styles to ensure elements are visible */
-            width: 100px; /* Set a specific width */
-            height: 50px; /* Set a specific height */
-            font-size: 1.2em; /* Adjust font size if needed */
-            line-height: 1.5; /* Adjust line height for vertical centering */
-            text-align: center; /* Center the text within the container */
-            display: flex; /* Use flexbox for centering */
-            align-items: center; /* Vertically center content */
-            justify-content: center; /* Horizontally center content */
-        }
-
-        #done-button {
-            display: none;
-        }
-
-        /* Added styles to ensure elements are visible */
-        #link-input {
-            display: none;
-        }
+        /* ... (styles remain the same) ... */
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Editor Homepage</h2>
-    <div id="links-display"></div>
-    <button onclick="showInput()">Add Link</button>
-    <input type="text" id="link-input" placeholder="Paste Google Drive link">
-    <button id="done-button" onclick="doneAdding()">Done</button>
-</div>
+    <div class="container">
+        <h2>Editor Homepage</h2>
+        <div id="links-display"></div>
+        <button onclick="showInput()">Add Link</button>
+        <input type="text" id="link-input" placeholder="Paste Google Drive link">
+        <button id="done-button" onclick="doneAdding()">Done</button>
+    </div>
 
-<script>
-    const linkInput = document.getElementById('link-input');
-    const linksDisplay = document.getElementById('links-display');
-    const doneButton = document.getElementById('done-button');
-    let links = [];
+    <script>
+        // ... (linkInput, linksDisplay, doneButton remain the same)
 
-    function showInput() {
-        linkInput.style.display = 'block';
-        doneButton.style.display = 'block';
-    }
+        function doneAdding() {
+            const link = linkInput.value;
 
-    function doneAdding() {
-        const link = linkInput.value;
-
-        if (link) {
-            links.push({link: link, password: String(links.length + 1).padStart(3, '0')});
-            displayLinks();
-            linkInput.value = '';
-            linkInput.style.display = 'none';
-            doneButton.style.display = 'none';
-        } else {
-            alert('Please enter a link.');
+            if (link) {
+                fetch('/.netlify/functions/update-links', { // Use the Netlify function
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ link: link })
+                })
+                .then(response => response.json())
+                .then(newLink => {
+                    displayLinks(); // Refresh display after successful add
+                    linkInput.value = '';
+                    linkInput.style.display = 'none';
+                    doneButton.style.display = 'none';
+                })
+                .catch(error => console.error("Error adding link:", error));
+            } else {
+                alert('Please enter a link.');
+            }
         }
-    }
 
-    function displayLinks() {
-        linksDisplay.innerHTML = ''; // Clear previous links
+        function displayLinks() {
+            fetch('/.netlify/functions/update-links') // Fetch from Netlify function
+            .then(response => response.json())
+            .then(links => {
+                linksDisplay.innerHTML = '';
+                links.forEach((linkObj, index) => {
+                    const linkContainer = document.createElement('div');
+                    linkContainer.className = 'pink-container';
+                    linkContainer.textContent = `${index + 1}`;
+                    linkContainer.onclick = () => window.open(linkObj.link, '_blank');
+                    linksDisplay.appendChild(linkContainer);
+                });
+            })
+            .catch(error => console.error("Error fetching links:", error));
+        }
 
-        links.forEach((linkObj, index) => {
-            const linkContainer = document.createElement('div');
-            linkContainer.className = 'pink-container';
-            linkContainer.textContent = `${index + 1}`;
-            linkContainer.onclick = () => window.open(linkObj.link, '_blank');
-            linksDisplay.appendChild(linkContainer);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            displayLinks(); // Call displayLinks on load
         });
 
-        // Update customer page (broadcast new links)
-        const broadcast = new BroadcastChannel('newLink');
-        broadcast.postMessage(links);
-    }
-
-    // Fetch existing links on load (optional)
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchLinks();
-    });
-
-    function fetchLinks() {
-        // You can implement this to fetch existing links from data.json if needed
-        // For now, let's add a dummy link for testing
-        links.push({link: "https://example.com", password: "001"});
-        displayLinks();
-    }
-</script>
+    </script>
 </body>
 </html>

@@ -1,18 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Customer</title>
     <style>
-        .pink-container {
-            background-color: pink;
-            padding: 10px;
-            margin: 5px;
-            display: inline-block;
-            cursor: pointer;
-            text-decoration: none;
-            color: black;
-        }
+        /* ... (styles remain the same) ... */
     </style>
 </head>
 <body>
@@ -24,31 +15,27 @@
     <script>
         const containersDisplay = document.getElementById('containers-display');
 
-        function fetchLinks() {
+        function displayLinks() {
             fetch('/.netlify/functions/update-links')
-                .then(response => response.json())
-                .then(links => displayLinks(links))
-                .catch(error => console.error("Error fetching links:", error));
-        }
-
-        function displayLinks(links) {
-            containersDisplay.innerHTML = '';
-            links.forEach((linkObj, index) => {
-                const container = document.createElement('div');
-                container.className = 'pink-container';
-                container.textContent = `${index + 1}`;
-                container.onclick = () => window.open(linkObj.link, '_blank');
-                containersDisplay.appendChild(container);
-            });
+            .then(response => response.json())
+            .then(links => {
+                containersDisplay.innerHTML = '';
+                links.forEach((linkObj, index) => {
+                    const container = document.createElement('div');
+                    container.className = 'pink-container';
+                    container.textContent = `${index + 1}`;
+                    container.onclick = () => window.open(linkObj.link, '_blank');
+                    containersDisplay.appendChild(container);
+                });
+            })
+            .catch(error => console.error("Error fetching links:", error));
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            fetchLinks();
+            displayLinks(); // Initial fetch
 
-            const broadcast = new BroadcastChannel('newLink');
-            broadcast.onmessage = (event) => {
-                fetchLinks(); // Refresh the list when a new link is added
-            };
+            // "Near" Real-time updates (using setInterval - adjust interval as needed)
+            setInterval(displayLinks, 5000); // Fetch and update every 5 seconds
         });
     </script>
 </body>
