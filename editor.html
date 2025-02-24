@@ -1,14 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* ... (styles remain the same) ... */
-    </style>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css"> </head>
 <body>
     <div class="container">
         <h2>Editor Homepage</h2>
@@ -21,10 +16,33 @@
     <script>
         // ... (linkInput, linksDisplay, doneButton remain the same)
 
-        // ... (doneAdding function remains the same)
+        function doneAdding() {
+            const link = linkInput.value;
+
+            if (link) {
+                fetch('/.netlify/functions/update-links', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ link: link })
+                })
+                .then(response => response.json())
+                .then(newLink => {
+                    displayLinks(); // Call displayLinks() to update the view!
+                    // Broadcast the update (for customer page)
+                    const broadcast = new BroadcastChannel('newLink');
+                    broadcast.postMessage(newLink); // Send the new link data
+                    linkInput.value = '';
+                    linkInput.style.display = 'none';
+                    doneButton.style.display = 'none';
+                })
+                .catch(error => console.error("Error adding link:", error));
+            } else {
+                alert('Please enter a link.');
+            }
+        }
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links') // Or '/data.json' for testing ONLY
+            fetch('/.netlify/functions/update-links')
             .then(response => response.json())
             .then(fetchedLinks => {
                 linksDisplay.innerHTML = '';

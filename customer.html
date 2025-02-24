@@ -1,14 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* ... (styles remain the same) ... */
-    </style>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css"> </head>
 <body>
     <div class="container">
         <h2>Customer</h2>
@@ -19,7 +14,7 @@
         const containersDisplay = document.getElementById('containers-display');
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links') // Or '/data.json' for testing ONLY
+            fetch('/.netlify/functions/update-links')
             .then(response => response.json())
             .then(fetchedLinks => {
                 containersDisplay.innerHTML = '';
@@ -35,8 +30,13 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            displayLinks();
-            setInterval(displayLinks, 5000); // Adjust interval as needed
+            displayLinks(); // Initial load
+
+            // Real-time updates using BroadcastChannel
+            const broadcast = new BroadcastChannel('newLink');
+            broadcast.onmessage = (event) => {
+                displayLinks(); // Update when a new link is broadcast
+            };
         });
     </script>
 </body>
