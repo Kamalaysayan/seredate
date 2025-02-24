@@ -1,0 +1,7 @@
+[build]
+  functions = "functions"  # or functions = "seredate/functions" if your functions folder is nested
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
