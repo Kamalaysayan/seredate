@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">  <head>
+<html lang="en">
+<head>
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <style>
         /* ... your styles ... */
+        #link-input, #done-button {
+            display: none; /* Initially hide the input and button */
+        }
     </style>
 </head>
 <body>
@@ -22,6 +26,11 @@
         let linksDisplay;
         let linkInput;
         let doneButton;
+
+        function showInput() {
+            linkInput.style.display = 'block';
+            doneButton.style.display = 'block';
+        }
 
         function doneAdding() {
             const link = linkInput.value;
@@ -41,7 +50,8 @@
                     const broadcast = new BroadcastChannel('newLink');
                     broadcast.postMessage(newLink);
                     linkInput.value = '';
-                    // ... other parts of doneAdding
+                    linkInput.style.display = 'none'; // Hide input after adding
+                    doneButton.style.display = 'none'; // Hide button after adding
                 })
                 .catch(error => console.error("Error adding link:", error));
             } else {
@@ -53,7 +63,7 @@
             fetch('/.netlify/functions/update-links')
                 .then(response => response.json())
                 .then(fetchedLinks => {
-                    if (Array.isArray(fetchedLinks)) { // Check if it's an array
+                    if (Array.isArray(fetchedLinks)) {
                         linksDisplay.innerHTML = '';
                         fetchedLinks.forEach((linkObj, index) => {
                             const linkContainer = document.createElement('div');
