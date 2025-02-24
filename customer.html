@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* ... (styles remain the same) ... */
     </style>
@@ -16,11 +19,11 @@
         const containersDisplay = document.getElementById('containers-display');
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links')
+            fetch('/.netlify/functions/update-links') // Or '/data.json' for testing ONLY
             .then(response => response.json())
-            .then(fetchedLinks => { // Use fetchedLinks here!
+            .then(fetchedLinks => {
                 containersDisplay.innerHTML = '';
-                fetchedLinks.forEach((linkObj, index) => { // Iterate over fetchedLinks
+                fetchedLinks.forEach((linkObj, index) => {
                     const container = document.createElement('div');
                     container.className = 'pink-container';
                     container.textContent = `${index + 1}`;
@@ -33,8 +36,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             displayLinks();
-
-            setInterval(displayLinks, 5000);
+            setInterval(displayLinks, 5000); // Adjust interval as needed
         });
     </script>
 </body>

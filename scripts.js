@@ -43,7 +43,7 @@ async function markAsDone() {
     formData.append('image', file);
 
     try {
-        const response = await fetch('/upload', {
+        const response = await fetch('/upload', { // Make sure this path is correct
             method: 'POST',
             body: formData
         });
@@ -67,12 +67,12 @@ async function markAsDone() {
 
 async function fetchImages() {
     try {
-        const response = await fetch('/images');
+        const response = await fetch('/images'); // Make sure this path is correct
         if (!response.ok) {
             throw new Error(`Failed to fetch images: ${response.status}`);
         }
         const images = await response.json();
-        const imageList = document.getElementById('imageList');
+        const imageList = document.getElementById('imageList'); // Make sure this ID is correct
         imageList.innerHTML = '';
 
         images.forEach(image => {
@@ -107,7 +107,7 @@ async function fetchImages() {
 }
 
 async function deleteImage(imageId) {
-    await fetch(`/delete-image/${imageId}`, { method: 'DELETE' });
+    await fetch(`/delete-image/${imageId}`, { method: 'DELETE' }); // Make sure this path is correct
 }
 
 function startQrCodeReader() {
@@ -118,11 +118,15 @@ function startQrCodeReader() {
 
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
         scanning = true;
-        video.setAttribute('playsinline', true);
+        video.setAttribute('playsinline', true); // Required for some mobile browsers
         video.srcObject = stream;
         video.play();
         requestAnimationFrame(tick);
+    }).catch(function(error) {
+        console.error("Error accessing camera:", error);
+        alert("Could not access camera. Please make sure you have a camera and grant permissions.");
     });
+
 
     function tick() {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -145,6 +149,13 @@ function startQrCodeReader() {
     }
 }
 
+// Add lang attribute to <html> if it's missing (do this only once)
+if (!document.documentElement.lang) {
+  document.documentElement.lang = 'en'; // Or your preferred language code
+}
+
+
+// These conditional checks should remain at the end of the file
 if (window.location.pathname.endsWith('editor.html')) {
     fetchImages();
 }

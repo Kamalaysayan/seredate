@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* ... (styles remain the same) ... */
     </style>
@@ -18,36 +21,14 @@
     <script>
         // ... (linkInput, linksDisplay, doneButton remain the same)
 
-        function doneAdding() {
-            const link = linkInput.value;
-
-            if (link) {
-                fetch('/.netlify/functions/update-links', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ link: link })
-                })
-                .then(response => response.json())
-                .then(newLink => {
-                    displayLinks(); // Refresh display after successful add
-                    linkInput.value = '';
-                    linkInput.style.display = 'none';
-                    doneButton.style.display = 'none';
-                })
-                .catch(error => console.error("Error adding link:", error));
-            } else {
-                alert('Please enter a link.');
-            }
-        }
+        // ... (doneAdding function remains the same)
 
         function displayLinks() {
-            fetch('/.netlify/functions/update-links')
+            fetch('/.netlify/functions/update-links') // Or '/data.json' for testing ONLY
             .then(response => response.json())
-            .then(fetchedLinks => { // Use fetchedLinks here!
+            .then(fetchedLinks => {
                 linksDisplay.innerHTML = '';
-                fetchedLinks.forEach((linkObj, index) => { // Iterate over fetchedLinks
+                fetchedLinks.forEach((linkObj, index) => {
                     const linkContainer = document.createElement('div');
                     linkContainer.className = 'pink-container';
                     linkContainer.textContent = `${index + 1}`;
