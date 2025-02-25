@@ -1,5 +1,10 @@
 {
-  "name": "my-functions",
+  "name": "kseredate",  // Replace with your site's name
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "@netlify/db": "prelease" // Or the latest version
+  },
+  "scripts": {
+    "build": "" // This can be left empty for a basic site
+  }
 }
