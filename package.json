@@ -1,7 +1,10 @@
 {
-  "name": "kseredate",
+  "name": "https://kseredate.netlify.app/",
   "version": "1.0.0",
+  "dependencies": {
+    "@netlify/db": "prelease"
+  },
   "scripts": {
-    "build": "" // Or your build command if using a framework
+    "build": ""
   }
 }
