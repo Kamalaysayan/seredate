@@ -9,6 +9,20 @@
         #link-input, #done-button {
             display: none;
         }
+        .pink-container { /* Style the delete button */
+          position: relative; /* Needed for positioning the delete button */
+        }
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: red; /* Or any other color */
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -23,45 +37,7 @@
     </div>
 
     <script>
-        let linksDisplay;
-        let linkInput;
-        let doneButton;
-
-        function showInput() {
-            linkInput.style.display = 'block';
-            doneButton.style.display = 'block';
-        }
-
-        async function doneAdding() {
-            const link = linkInput.value;
-            if (link) {
-                try {
-                    const response = await fetch('/.netlify/functions/update-links', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ link })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`Failed to add link: ${response.status} - ${errorData.error || response.statusText}`);
-                    }
-
-                    const newLink = await response.json();
-                    displayLinks(); // Refresh the list of links
-                    const broadcast = new BroadcastChannel('newLink');
-                    broadcast.postMessage(newLink);
-                    linkInput.value = '';
-                    linkInput.style.display = 'none';
-                    doneButton.style.display = 'none';
-                } catch (error) {
-                    console.error("Error adding link:", error);
-                    alert(error.message);
-                }
-            } else {
-                alert('Please enter a link.');
-            }
-        }
+        // ... (other JavaScript code) ...
 
         async function displayLinks() {
             try {
@@ -81,7 +57,19 @@
                         const linkContainer = document.createElement('div');
                         linkContainer.className = 'pink-container';
                         linkContainer.textContent = `${index + 1}`;
-                        linkContainer.onclick = () => window.open(linkObj.link, '_blank');
+                        linkContainer.onclick = () => window.open(linkObj.data.link, '_blank'); // Access link via .data.link
+
+                        // Add delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'delete-button';
+                        deleteButton.textContent = 'X';
+                        deleteButton.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Prevent container click
+                            deleteLink(linkObj._id); // Call deleteLink function
+                        });
+                        linkContainer.appendChild(deleteButton);
+
+
                         linksDisplay.appendChild(linkContainer);
                     });
                 } else {
@@ -94,12 +82,27 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            linksDisplay = document.getElementById('links-display');
-            linkInput = document.getElementById('link-input');
-            doneButton = document.getElementById('done-button');
-            displayLinks();
-        });
+        async function deleteLink(id) {
+            try {
+                const response = await fetch('/.netlify/functions/update-links', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id }) // Send the ID to delete
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Failed to delete link: ${response.status} - ${errorData.error || response.statusText}`);
+                }
+
+                displayLinks(); // Refresh the display after delete
+            } catch (error) {
+                console.error("Error deleting link:", error);
+                alert(error.message);
+            }
+        }
+
+        // ... (rest of your JavaScript code) ...
     </script>
 </body>
 </html>
