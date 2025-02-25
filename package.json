@@ -1,10 +1,10 @@
 {
-  "name": "kseredate",  // Replace with your site's name
+  "name": "kseredate",
   "version": "1.0.0",
   "dependencies": {
-    "@netlify/db": "prelease" // Or the latest version
+    "@netlify/db": "prelease"
   },
   "scripts": {
-    "build": "" // This can be left empty for a basic site
+    "build": ""
   }
 }
