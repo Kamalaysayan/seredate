@@ -1,10 +1,10 @@
 const fs = require('fs');
-const path = require('path'); // Import the path module
+const path = require('path');
 
 exports.handler = async (event) => {
     try {
         const method = event.httpMethod;
-        const filePath = path.join(__dirname, 'data.json'); // Construct path using path.join and __dirname
+        const filePath = path.join(__dirname, '..', 'data.json'); // Corrected path
 
         if (method === 'GET') {
             const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
