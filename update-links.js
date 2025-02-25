@@ -4,7 +4,7 @@ const path = require('path');
 exports.handler = async (event) => {
     try {
         const method = event.httpMethod;
-        const filePath = path.join(__dirname, '..', 'data.json'); // Corrected path
+        const filePath = path.join(__dirname, '..', 'static', 'data.json'); // Path corrected for 'static' directory
 
         if (method === 'GET') {
             const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
