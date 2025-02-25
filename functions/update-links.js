@@ -4,10 +4,9 @@ const path = require('path');
 exports.handler = async (event) => {
     try {
         const method = event.httpMethod;
-        const filePath = path.join(__dirname, 'data.json'); // Use __dirname
+        const data = require('./data.json'); // Load data.json using require
 
         if (method === 'GET') {
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json" },
@@ -15,10 +14,10 @@ exports.handler = async (event) => {
             };
         } else if (method === 'POST') {
             const { link } = JSON.parse(event.body);
-            let data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
             data.push({ link });
-            fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+            fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2)); // Write back to data.json
 
             return {
                 statusCode: 200,
